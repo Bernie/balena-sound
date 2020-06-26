@@ -10,6 +10,21 @@ if [[ -z $DISABLE_MULTI_ROOM ]]; then
   if [[ -n $DEVICE_LATENCY ]]; then
     LATENCY="--latency $DEVICE_LATENCY"
   fi
+  # Select alternate soundcard here
+  if [[ ${SOUNDCARD_SELECT:-0} -gt 0 ]]; then
+    cat > /root/.asoundrc << EOF
+pcm.!default {
+  type hw
+  card ${SOUNDCARD_SELECT}
+}
+
+ctl.!default {
+  type hw           
+  card ${SOUNDCARD_SELECT}
+}
+EOF
+  fi
+  echo "Selected soundcard ${SOUNDCARD_SELECT}"
 
   # Start snapclient
   SNAPCAST_SERVER=$(curl --silent http://localhost:3000)

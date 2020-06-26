@@ -48,6 +48,22 @@ printf "discoverable on\npairable on\nexit\n" | bluetoothctl > /dev/null
 # Also remove if device is from Pi 1 family, since snapcast server is disabled by default
 if [[ -n $DISABLE_MULTI_ROOM ]] || [[ $BALENA_DEVICE_TYPE == "raspberry-pi" ]]; then
   rm /root/.asoundrc
+
+  # If multi room is disabled, add soundcard config here
+  if [[ ${SOUNDCARD_SELECT:-0} -gt 0 ]]; then
+    cat > /root/.asoundrc << EOF
+pcm.!default {
+  type hw
+  card ${SOUNDCARD_SELECT}
+}
+
+ctl.!default {
+  type hw           
+  card ${SOUNDCARD_SELECT}
+}
+EOF
+  fi
+  echo "Selected soundcard ${SOUNDCARD_SELECT}"
 fi
 
 sleep 2
